@@ -296,8 +296,8 @@
             welcomeText: '',
             responseTimeText: '',
             poweredBy: {
-                text: 'Powered by n8n',
-                link: 'https://n8n.partnerlinks.io/m8a94i19zhqq?utm_source=nocodecreative.io'
+                text: 'Powered by udsi',
+                link: 'https://universaldiesel.com.mx'
             }
         },
         style: {
@@ -383,8 +383,9 @@
     
     widgetContainer.appendChild(chatContainer);
     widgetContainer.appendChild(toggleButton);
-    document.body.appendChild(widgetContainer);
-
+    document.addEventListener("DOMContentLoaded", function () {
+        document.body.appendChild(widgetContainer);
+    });
     const newChatBtn = chatContainer.querySelector('.new-chat-btn');
     const chatInterface = chatContainer.querySelector('.chat-interface');
     const messagesContainer = chatContainer.querySelector('.chat-messages');
@@ -457,12 +458,27 @@
             });
             
             const data = await response.json();
+
+            
+
             
             const botMessageDiv = document.createElement('div');
-            botMessageDiv.className = 'chat-message bot';
-            botMessageDiv.textContent = Array.isArray(data) ? data[0].output : data.output;
-            messagesContainer.appendChild(botMessageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+botMessageDiv.className = 'chat-message bot';
+
+let formattedMessage = (Array.isArray(data) ? data[0].output : data.output)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Convert **bold** to <strong>
+    .replace(/\n\d+\.\s/g, '<li>') // Convert numbered items into <li>
+    .replace(/\n/g, '<br>'); // Preserve other line breaks
+
+// Wrap detected list items in <ul> to format them correctly
+if (formattedMessage.includes('<li>')) {
+    formattedMessage = `<ul>${formattedMessage}</ul>`;
+}
+
+botMessageDiv.innerHTML = formattedMessage;
+messagesContainer.appendChild(botMessageDiv);
+messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
         } catch (error) {
             console.error('Error:', error);
         }
